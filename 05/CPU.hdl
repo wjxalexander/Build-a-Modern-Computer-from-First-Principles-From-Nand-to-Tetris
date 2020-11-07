@@ -1,0 +1,103 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in 
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM==0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time step. If reset==1 then the 
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather 
+ * than to the address resulting from executing the current instruction. 
+ CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+    }
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    // Put your code here:
+    // instruction handling part
+    
+    // Mux one
+    Mux16(a=instruction, b=ALUoutput, sel=instruction[15], out=muxoneoutput);
+    // A instruction starts with 0 (op coae)
+    Not(in=instruction[15], out=notopcode);
+    // A-instruction === 0 or d1 === 1 will update A register
+    Or(a=notopcode, b=instruction[5], out=loadA);  // loadA = d1
+    // handle A register
+    ARegister(in=muxoneoutput, load=loadA, out=registeraoutput, out[0..14] = addressM);
+    // handle Mux2 to y in ALU, y is A or M 
+    // in C instruction a can contol y = M or y = A  with a in week 4 sel === a
+    Mux16(a=registeraoutput, b=inM, sel=instruction[12], out=AorMoutput);
+    // handle D register load = c instruction d2
+    And(a=instruction[15],b=instruction[4],out=loadD);// loadD = d2
+    DRegister(in=ALUoutput, load=loadD, out=Doutput);
+
+    //when it is an C - instruction && d3 == 1, write M 
+    And(a=instruction[15],b=instruction[3],out=writeM);//writeM = d3
+   
+    // ALU
+    And(a=instruction[15], b=instruction[11], out=zx); 
+    And(a=instruction[15], b=instruction[10], out=nx);    
+    And(a=instruction[15], b=instruction[9], out=zy);    
+    And(a=instruction[15], b=instruction[8], out=ny);    
+    And(a=instruction[15], b=instruction[7], out=f);    
+    And(a=instruction[15], b=instruction[6], out=no);    
+    ALU(x=Doutput, y=AorMoutput, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outM, out=ALUoutput, zr=zerooutput, ng=ngoutput);
+    
+    // JUMP
+    // zr out==0 zr = 1 else zr = 0
+    // ng out < 0 ng = 1 else ng = 0
+    Or(a=zerooutput, b=ngoutput, out=notpositive);
+    Not(in=notpositive, out=positive);
+
+    And(a=instruction[0],b=positive,out=j3);//j3
+    And(a=instruction[1],b=zerooutput,out=j2);//j2
+    And(a=instruction[2],b=ngoutput,out=j1);//j1
+
+    Or(a=j1, b=j2, out=j12);
+    Or(a=j12, b=j3, out=j123);
+
+    And(a=j123, b=instruction[15], out=needjump);
+    PC(in=registeraoutput, load=needjump, inc=true, reset=reset, out[0..14]=pc);
+    
+}
