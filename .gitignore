@@ -2,3 +2,6 @@
 *.tst
 *.zip
 *.cmp
+node_modules/
+launch.json
+package-lock.json
