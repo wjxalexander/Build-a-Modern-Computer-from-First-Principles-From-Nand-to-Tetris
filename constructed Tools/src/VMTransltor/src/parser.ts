@@ -1,14 +1,10 @@
-import { type } from "os"
+import { ERANGE } from "constants"
 import preload from "./PreReader"
 import { arithemticType } from "./tools/arithmetic"
 
 export default async function parser(filepath: string) {
     const preloadCode = await preload(filepath)
-
-    return preloadCode?.map(item => {
-        const [command, segment, value] = item.split(/\s+/)
-        return { command: getCommandType(command), segment, value }
-    })
+    return preloadCode && preloadCode.map(getCommandType)
 }
 
 export function whichInstruction(code: string) {
@@ -21,18 +17,23 @@ export function whichInstruction(code: string) {
     return "C"
 }
 
-function getCommandType(typeString: string) {
+function getCommandType(commands: string) {
+    const [command, segment, value] = commands.split(/\s+/)
     const map: { [k: string]: string } = {
         push: "C_PUSH",
         pop: "C_POP",
         arithmetic: "C_ARITHMETIC"
     }
     try {
-        const typeToCompare = typeString.trim().toLowerCase()
+        const typeToCompare = command.trim().toLowerCase()
         if (arithemticType.includes(typeToCompare)) {
-            return map.arithmetic
+            return { command: typeToCompare, segment: null, value: null }
         }
-        return map[typeString] ? map[typeString] : new Error("type not found")
+        if (map[typeToCompare]) {
+            return { command: map[typeToCompare], segment, value }
+        } else {
+            throw new Error('type not found')
+        }
     } catch (error) {
         console.warn('fail to get command type:', error)
     }

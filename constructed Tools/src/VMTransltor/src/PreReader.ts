@@ -5,7 +5,7 @@ const PromiseFs = fs.promises
 
 async function readFile(dirpath: string) {
     try {
-        const codes = await PromiseFs.readFile(path.join(__dirname, '../sourceCode', dirpath), 'utf-8')
+        const codes = await PromiseFs.readFile(dirpath, 'utf-8')
         return codes.toString()
     } catch (error) {
         console.warn(error)

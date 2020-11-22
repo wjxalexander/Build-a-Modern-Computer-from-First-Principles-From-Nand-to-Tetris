@@ -62,9 +62,9 @@ async function main(filepath: string) {
     arr.forEach((v) => fileSrtream.write(v + '\n'));
     fileSrtream.end();
 }
-main('Add')
-main('Max')
-main('Rect')
-main('Pong')
+// main('Add')
+// main('Max')
+// main('Rect')
+// main('Pong')
 
 export default Assembler
