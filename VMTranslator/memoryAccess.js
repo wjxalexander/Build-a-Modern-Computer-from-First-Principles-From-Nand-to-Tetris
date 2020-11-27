@@ -24,27 +24,26 @@ function addressHandler(segment, value, file) {
         return `@${value}\nD=A\n@${memoryMap[segment]}\nA=M+D\nD=A`
     }
     if (segment === POINTER) {
-        return `@${pointerPositon + parseInt(value)}\nD = A`
+        return `@${pointerPositon + parseInt(value)}\nD=A`
     }
     if (segment === TEMP) {
-        return `@${tempPosition + parseInt(value)}\nD = A`
+        return `@${tempPosition + parseInt(value)}\nD=A`
     }
     if (segment === STATIC) {
-        return `@${file}.${value}\nD=A `
+        const fileName = file.split("/").pop()
+        return `@${fileName}.${value}\nD=A`
     }
 }
 function pushHandler(segment, value, file) {
     // about push addr = seg + i, *SP = *addr, SP++
-    return `
-// push start
-${addressHandler(segment, value, file)}
+    return `${addressHandler(segment, value, file)}
 ${segment !== CONSTANT ? `A=D\nD=M` : "\n"}
 @SP
 A=M
 M=D
 @SP
 M=M+1
-// push done`
+`
 }
 
 function popHandler(segment, value, file) {
@@ -52,9 +51,7 @@ function popHandler(segment, value, file) {
     if (segment === CONSTANT) {
         throw new Error("can not push const")
     }
-    return `
-// pop start
-${addressHandler(segment, value, file)} // addr
+    return `${addressHandler(segment, value, file)}
 @R14
 M=D
 @SP
@@ -66,7 +63,7 @@ A=M
 M=D
 @R14
 M=0
-// pop done`
+`
 }
 
 

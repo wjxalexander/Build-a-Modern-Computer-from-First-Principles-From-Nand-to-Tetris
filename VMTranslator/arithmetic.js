@@ -1,4 +1,5 @@
-export const arithemticType = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
+
+const arithemticType = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
 
 const loadtwoElement = `@SP
 A=M-1
@@ -14,28 +15,26 @@ D=M`
 
 function add() {
     return `
-// add start
 ${loadtwoElement}
 M=D+M
 D=A+1
 @SP
 M=D
-//add done`
+`
 }
 
 function sub() {
     return `
-// sub start
 ${loadtwoElement}
 M=M-D
 D=A+1
 @SP
 M=D
-//sub done`
+`
 }
 let index = 0
 
-function compareGenerator(instruction: string) {
+function compareGenerator(instruction) {
     const oldindex = index
     index++
     const truthLabel = `TRUE${oldindex}`
@@ -84,7 +83,6 @@ M=D|M
 D=A+1
 @SP
 M=D
-//or done
 `
 }
 
@@ -94,23 +92,24 @@ M=D&M
 D=A+1
 @SP
 M=D
-//or done
 `
 }
 
 const neg = () => {
     return `${loadoneElement}
 M=-M
-//neg done
 `
 }
 const not = () => {
     return `${loadoneElement}
 M=!M
-//not done
 `
 }
 
-export const arithmetic: { [key: string]: any } = {
+const arithmetic = {
     add, sub, neg, not, and, gt, lt, eq, or
+}
+module.exports = {
+    arithmetic,
+    arithemticType
 }

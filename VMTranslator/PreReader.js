@@ -1,17 +1,15 @@
 #!/usr/bin/env ts-node-script
-import * as fs from "fs";
-import * as path from "path"
-const PromiseFs = fs.promises
+const fs = require('fs');
 
-async function readFile(dirpath: string) {
+async function readFile(dirpath) {
     try {
-        const codes = await PromiseFs.readFile(dirpath, 'utf-8')
+        const codes = fs.readFileSync(dirpath, 'utf-8')
         return codes.toString()
     } catch (error) {
         console.warn(error)
     }
 }
-function ignoreWhiteSpace(item: string) {
+function ignoreWhiteSpace(item) {
     const slashPosition = item.indexOf("//")
     if (slashPosition === 0) {
         return ""
@@ -22,7 +20,7 @@ function ignoreWhiteSpace(item: string) {
     return item.trim()
 }
 
-async function transformString(sourceFile: string) {
+async function transformString(sourceFile) {
     const loadedCodes = await readFile(sourceFile)
     if (!loadedCodes || loadedCodes.length === 0) {
         return
@@ -31,4 +29,4 @@ async function transformString(sourceFile: string) {
 }
 
 
-export default transformString
+module.exports = { preload: transformString } 

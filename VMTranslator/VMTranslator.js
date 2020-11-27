@@ -1,15 +1,10 @@
-import * as fs from "fs";
-import * as path from "path"
-import parser from "./parser"
-import { pushPop } from "./memoryAccess"
-import { arithmetic } from "./arithmetic"
-import { } from "./codeWriter"
-type arithmetic = { command: string };
-type pushPop = {
-    command: string;
-    segment: string;
-    value: string;
-}
+const fs = require('fs');
+const path = require('path');
+const { parser } = require('./parser');
+const { pushPop } = require('./memoryAccess');
+const { arithmetic } = require('./arithmetic');
+
+console.log(11233)
 let outputFileName = ''
 const inputFileName = process.argv[2]
 const isDirectory = fs.lstatSync(inputFileName).isDirectory()
@@ -32,15 +27,15 @@ if (isDirectory) {
     let tempArry = inputFileName.split('.')
     tempArry.pop()
     let preName = tempArry.join('.')
-    console.log(preName)
     outputFileName = preName
     main(inputFileName, preName)
 }
 
-async function main(filepath: string, preName: string) {
+async function main(filepath, preName) {
+    let totalRet = ""
     const parsedCommands = await parser(filepath)
     if (parsedCommands && outputFileName) {
-        const ret = parsedCommands.map((item: any) => {
+        const ret = parsedCommands.map((item) => {
             const { command } = item
             if (pushPop[command]) {
                 return writePushPop(item, preName)
@@ -49,11 +44,22 @@ async function main(filepath: string, preName: string) {
                 return arithmetic[command]()
             }
         })
-        writeFile(ret)
+        totalRet+= ret
     }
+    writeFile(totalRet)
+
 }
-
-
+function writePushPop(props, file) {
+    const { command, segment, value } = props
+    return pushPop[command](segment, value, file)
+}
+function writeFile(streams) {
+    const fileSrtream = fs.createWriteStream(`${outputFileName}.asm`, 'utf-8');
+    fileSrtream.on('error', function (err) { console.log(err) });
+    streams.forEach((v) => fileSrtream.write(v + '\n'));
+    console.log(333)
+    fileSrtream.end()
+}
 // main("StackArithmetic/SimpleAdd/SimpleAdd.vm")
 // main("StackArithmetic/StackTest/StackTest.vm")
 // main("MemoryAccess/BasicTest/BasicTest.vm")
