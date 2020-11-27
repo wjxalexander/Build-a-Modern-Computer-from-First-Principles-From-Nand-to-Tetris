@@ -1,6 +1,6 @@
 import { ERANGE } from "constants"
 import preload from "./PreReader"
-import { arithemticType } from "./tools/arithmetic"
+import { arithemticType } from "./arithmetic"
 
 export default async function parser(filepath: string) {
     const preloadCode = await preload(filepath)
