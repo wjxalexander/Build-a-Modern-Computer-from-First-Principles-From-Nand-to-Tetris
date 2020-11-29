@@ -37,13 +37,12 @@ function addressHandler(segment, value, file) {
 function pushHandler(segment, value, file) {
     // about push addr = seg + i, *SP = *addr, SP++
     return `${addressHandler(segment, value, file)}
-${segment !== CONSTANT ? `A=D\nD=M` : "\n"}
+${segment !== CONSTANT ? `A=D\nD=M` : ""}
 @SP
 A=M
 M=D
 @SP
-M=M+1
-`
+M=M+1`
 }
 
 function popHandler(segment, value, file) {
@@ -62,8 +61,7 @@ D=M
 A=M
 M=D
 @R14
-M=0
-`
+M=0`
 }
 
 
@@ -71,5 +69,7 @@ module.exports = {
     pushPop: {
         C_POP: popHandler,
         C_PUSH: pushHandler
-    }
+    },
+    CONSTANT,
+    memoryMap
 }

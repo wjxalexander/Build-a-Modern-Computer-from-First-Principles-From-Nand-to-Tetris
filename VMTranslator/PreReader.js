@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node-script
 const fs = require('fs');
 
-async function readFile(dirpath) {
+function readFile(dirpath) {
     try {
         const codes = fs.readFileSync(dirpath, 'utf-8')
         return codes.toString()
@@ -20,8 +20,8 @@ function ignoreWhiteSpace(item) {
     return item.trim()
 }
 
-async function transformString(sourceFile) {
-    const loadedCodes = await readFile(sourceFile)
+function transformString(sourceFile) {
+    const loadedCodes = readFile(sourceFile)
     if (!loadedCodes || loadedCodes.length === 0) {
         return
     }

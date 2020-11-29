@@ -1,5 +1,5 @@
 
-const arithemticType = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
+const arithemticTypes = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"]
 
 const loadtwoElement = `@SP
 A=M-1
@@ -14,18 +14,16 @@ AM=M-1
 D=M`
 
 function add() {
-    return `
-${loadtwoElement}
+    return `${loadtwoElement}
 M=D+M
 D=A+1
 @SP
-M=D
+M=D // add done
 `
 }
 
 function sub() {
-    return `
-${loadtwoElement}
+    return `${loadtwoElement}
 M=M-D
 D=A+1
 @SP
@@ -111,5 +109,7 @@ const arithmetic = {
 }
 module.exports = {
     arithmetic,
-    arithemticType
+    arithemticTypes,
+    loadStackHeadToD,
+    loadoneElement
 }
