@@ -12,8 +12,6 @@ function parser(filepath) {
     return preloadCode && preloadCode.map(getCommandType)
 }
 
-const fnRegx = new RegExp(/^function \S+/)
-
 function getCommandType(commands) {
     const [command, segment, value] = commands.split(/\s+/)
     try {
