@@ -1,0 +1,9 @@
+class Main {
+	function void main() {
+		var Timer ct;
+		let ct = Timer.new(Keyboard.readInt("Input the seconds want to count down (less than 10):"));
+		do ct.setInterval();
+		do ct.dispose();
+		return;
+	}
+}

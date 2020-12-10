@@ -1,0 +1,34 @@
+/** Movement class: creates the functions that enable the user to "paint" 
+* in the four directions: down, up, left and right. These functions are called
+* by the main function in the Main class. */
+
+class Movement {
+
+        function Array goDown(Array position){ // It takes care that we can paint downwards within the screen limits.
+		if((position[1] + 20) < 254){
+			let position[1] = position[1] + 2;
+		}
+		return position;
+	}
+
+	function Array goUp(Array position){ // It takes care that we can paint upwards within the screen limits.
+		if(position[1] > 0){
+			let position[1] = position[1] - 2;
+		}
+		return position;
+	}
+
+	function Array goLeft(Array position){ // It takes care that we can paint to the left within the screen limits.
+		if(position[0] > 0){
+			let position[0] = position[0] - 2;
+		}
+		return position;
+	}
+
+	function Array goRight(Array position){ // It takes care that we can paint to the right within the screen limits.
+		if((position[0] + 20) < 510){
+			let position[0] = position[0] + 2;
+		}
+		return position;
+	}
+}

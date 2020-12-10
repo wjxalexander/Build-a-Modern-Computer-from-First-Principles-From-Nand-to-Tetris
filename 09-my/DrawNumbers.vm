@@ -1,0 +1,1056 @@
+function DrawNumbers.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push pointer 0
+return
+function DrawNumbers.drawZero 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawOne 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawTwo 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawThree 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawFour 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawFive 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawSix 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 16
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawSeven 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawEight 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function DrawNumbers.drawNine 0
+push argument 0
+pop pointer 0
+push constant 16384
+push argument 1
+add
+pop this 1
+push this 1
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 32
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 64
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 96
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 128
+add
+push constant 528
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 160
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 192
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 224
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 256
+add
+push constant 512
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 288
+add
+push constant 1008
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 320
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 352
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 416
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push this 1
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return

@@ -1,0 +1,54 @@
+/** Main class: sets variables and initializes the program by running a while loop. */
+
+////////////////////////////////////////////////////////////////////////////////////
+// Game instructions: move the direction keys to paint a rectangle on the screen. //
+// Feel satisfied when you paint a double-lined one, :)                          //  
+///////////////////////////////////////////////////////////////////////////////////
+
+class Main {
+	// The main function represents the entry point to the program.
+	function void main(){
+		
+		// We declare our variables.
+		var Array position;
+		var int direction;
+		var int key;
+		let position = Array.new(2);
+
+		// Infinite loop that initializes the program. We "paint" the lines with the helper
+		// functions (goLeft|Up|Right|Down) from the Movement class.
+		while(true){
+			let key = Keyboard.keyPressed();  // Handles user input through the keyboard.
+			do Screen.setColor(false);  // Sets screen to white.
+			// Draws rectangle.
+			do Screen.drawRectangle(position[0], position[1], position[0] + 10, position[1] + 10);
+			
+			if(~(key = 0)){   // If no key is pressed, there is no movement.
+				let direction = key;
+			}
+			if(direction = 130){ // If the left arrow key is pressed, we invoke the goLeft function.
+				let position = Movement.goLeft(position);
+			}
+			if(direction = 131){ // If the up arrow key is pressed, we invoke the goUp function.
+				let position = Movement.goUp(position);
+			}
+			if(direction = 132){ // If the right arrow key is pressed, we invoke the goRight function.
+				let position = Movement.goRight(position);
+			}
+			if(direction = 133){  // If the down arrow key is pressed, we invoke the goDown function.
+				let position = Movement.goDown(position);
+			}
+			
+			do Screen.setColor(true);  // We redraw the line and paint it black.
+			do Screen.drawRectangle(position[0], position[1], position[0] + 20, position[1] + 20);
+		}
+		
+		return;
+	}
+	
+	
+}
+
+	
+	
+

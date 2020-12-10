@@ -1,0 +1,44 @@
+class Timer {
+	field int seconds;
+	field DrawNumbers drawNumber;
+	field int postion;
+	constructor Timer new(int num) {
+		let seconds = num;
+	    let drawNumber = DrawNumbers.new();
+		return this;
+	}
+
+	method void setInterval() {
+		while(seconds > -1){
+			do Screen.clearScreen();
+			do drawSecond(seconds, 0);
+			let seconds = seconds - 1;
+			do Sys.wait(1000);
+		}
+			do Screen.clearScreen();
+			do Output.printString("Done");
+		return;
+	}
+
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	method void drawSecond(int seconds, int step){
+		let postion = 3500 + step;
+		if(seconds < 10){
+			if (seconds = 0)  { do drawNumber.drawZero(postion); }
+			if (seconds = 1)  { do drawNumber.drawOne(postion); }
+			if (seconds = 2)  { do drawNumber.drawTwo(postion); }
+			if (seconds = 3)  { do drawNumber.drawThree(postion); }
+			if (seconds = 4)  { do drawNumber.drawFour(postion); }
+			if (seconds = 5)  { do drawNumber.drawFive(postion); }
+			if (seconds = 6)  { do drawNumber.drawSix(postion); }
+			if (seconds = 7)  { do drawNumber.drawSeven(postion); }
+			if (seconds = 8)  { do drawNumber.drawEight(postion); }
+			if (seconds = 9)  { do drawNumber.drawNine(postion); }
+		}
+		return;
+	}
+}
