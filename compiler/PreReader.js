@@ -10,12 +10,17 @@ function readFile(dirpath) {
     }
 }
 function ignoreWhiteSpace(item) {
-    const slashPosition = item.indexOf("//")
-    if (slashPosition === 0) {
+    const doubleSlashPosition = item.indexOf("//")
+    const slashStarPotion =  item.indexOf("/*")
+
+    if (doubleSlashPosition === 0 || slashStarPotion === 0) {
         return ""
     }
-    if (slashPosition > 0) {
-        return item.substring(0, slashPosition).trim()
+    if (doubleSlashPosition > 0) {
+        return item.substring(0, doubleSlashPosition).trim()
+    }
+    if (slashStarPotion > 0) {
+        return item.substring(0, slashStarPotion).trim()
     }
     return item.trim()
 }
