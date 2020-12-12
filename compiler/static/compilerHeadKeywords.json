@@ -7,5 +7,24 @@
         "constructor",
         "function",
         "method"
+    ],
+    "statementsTitles": [
+        "if",
+        "let",
+        "while",
+        "do",
+        "return"
+    ],
+    "operators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "&",
+        ",",
+        "<",
+        ">",
+        "=",
+        "~"
     ]
 }

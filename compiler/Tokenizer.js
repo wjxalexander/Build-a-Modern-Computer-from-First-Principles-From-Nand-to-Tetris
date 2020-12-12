@@ -1,26 +1,16 @@
 const lexicalElements = require("./static/lexicalElements.json")
 const { preload } = require("./PreReader")
-const { writeFile } = require('./CodeWriter');
 
 const { keyword, symbol } = lexicalElements
 
-// handle string "xxxx = True, "xxxxx" = true, "xxxxx" = false;
-
 function tokenizer(filepath) {
     const preloadCodes = preload(filepath)
-
     const grouptedTokens = preloadCodes.map(codeHandler).reduce((acc, cur) => acc.concat(cur))
     const tokensWithTag = grouptedTokens.map(getTokenType)
     const xmlPart = tokensWithTag.map(item => item.xml)
     const jsonPart = tokensWithTag.map(item => item.json)
     const tokensWithLabel = ["<tokens>", ...xmlPart, "</tokens>"]
-
-    const fileArr = filepath.split('/')
-    const fileName = fileArr[fileArr.length - 1].split('.')[0]
-    fileArr.pop()
-
-    writeFile(tokensWithLabel, fileArr.join("/"), `${fileName}T_my`, "xml")
-    return jsonPart
+    return { xml: tokensWithLabel, json: jsonPart }
 }
 
 function codeHandler(code, index) {
@@ -66,7 +56,6 @@ function isLegalToken(token) {
     if (stringTest(token)) {
         return true
     }
-
     return keyword.includes(token) || symbol.includes(token) || /^\".*\"$/.test(token) || numberTest(token) || /^[a-zA-Z_]\w*$/.test(token)
 }
 
@@ -93,7 +82,6 @@ const specialSymbolMap = {
 }
 
 function keywordAndSymbolTokenGenerate(keyword, symbol) {
-
     if (specialSymbolMap.hasOwnProperty(keyword)) {
         keyword = specialSymbolMap[keyword]
     }
@@ -128,6 +116,3 @@ function identifierTokenGenrater(identifier) {
 module.exports = {
     tokenizer
 }
-// tokenizer('./compiler/tests/ExpressionLessSquare/Main.jack')
-// tokenizer('./compiler/tests/ExpressionLessSquare/SquareGame.jack')
-// tokenizer('./compiler/tests/ExpressionLessSquare/Square.jack')
