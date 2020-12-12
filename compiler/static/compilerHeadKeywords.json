@@ -1,0 +1,11 @@
+{
+    "classVarDecKeyWord": [
+        "static",
+        "field"
+    ],
+    "functionTitles": [
+        "constructor",
+        "function",
+        "method"
+    ]
+}
