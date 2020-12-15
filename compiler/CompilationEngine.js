@@ -13,8 +13,6 @@ function main(filePath) {
     fileArr.pop()
     writeFile(xml, fileArr.join("/"), `${fileName}T_my`, "xml")
     writeFile(compiledFile, fileArr.join("/"), `${fileName}_my`, "xml")
-    writeFile(json.map(JSON.stringify), fileArr.join("/"), `${fileName}_my_json`, "json")
-
 }
 
 function compileClass(codes) {
