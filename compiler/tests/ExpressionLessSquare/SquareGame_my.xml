@@ -281,19 +281,22 @@
 <expression>
 <term>
 <identifier> exit </identifier>
-<expressionList>
-</expressionList>
+</term>
+</expression>
 <symbol> ) </symbol>
 <symbol> { </symbol>
+<statements>
+<whileStatement>
 <keyword> while </keyword>
 <symbol> ( </symbol>
+<expression>
+<term>
 <identifier> key </identifier>
 </term>
 </expression>
 <symbol> ) </symbol>
 <symbol> { </symbol>
-<symbol> } </symbol>
-</whileStatement>
+<statements>
 <letStatement>
 <keyword> let </keyword>
 <identifier> key </identifier>
@@ -313,8 +316,10 @@
 </expressionList>
 <symbol> ) </symbol>
 <symbol> ; </symbol>
-<symbol> } </symbol>
 </doStatement>
+</statements>
+<symbol> } </symbol>
+</whileStatement>
 <ifStatement>
 <keyword> if </keyword>
 <symbol> ( </symbol>
@@ -521,6 +526,9 @@
 <symbol> ) </symbol>
 <symbol> ; </symbol>
 </doStatement>
+</statements>
+<symbol> } </symbol>
+</whileStatement>
 </statements>
 <symbol> } </symbol>
 </whileStatement>
