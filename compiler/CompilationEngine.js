@@ -1,13 +1,11 @@
-const { tokenizer, codeHandler } = require("./Tokenizer")
+const { tokenizer } = require("./Tokenizer")
 const compilerDirectMap = require("./static/compilerHeadKeywords.json")
 const { writeFile } = require("./CodeWriter")
 const { classVarDecKeyWord, functionTitles, statementsTitles, operators, statementsNeedNested } = compilerDirectMap;
 function main(filePath) {
     const tokenizedCode = tokenizer(filePath)
     const { xml, json } = tokenizedCode
-
     const compiledFile = compileClass(json)
-
     const fileArr = filePath.split('/')
     const fileName = fileArr[fileArr.length - 1].split('.')[0]
     fileArr.pop()
@@ -17,7 +15,6 @@ function main(filePath) {
 
 function compileClass(codes) {
     const [classKeyword, className, leftBrace, ...rest] = codes
-
     const { content: clsKey } = classKeyword;
     const { content: clsName } = className
     const { content: lftBrace } = leftBrace
@@ -57,9 +54,7 @@ function complileClassBody(classBody) {
 
     const { varStack, subroutine } = router
     const classVarDecResult = compileClassVarDec(varStack)
-
     const subroutineResult = compileSubroutine(subroutine)
-    console.log(router)
     return classVarDecResult.concat(subroutineResult)
 }
 
@@ -67,7 +62,7 @@ function compileClassVarDec(varDecs) {
     return varDecs.map(item => {
         return [
             `<classVarDec>`,
-            ...item.map(({ tag, content }) => "  <" + `${tag}> ${content} </${tag}>`),
+            ...item.map(singleItemXmlTag),
             `</classVarDec>`
         ]
     })
@@ -80,7 +75,7 @@ function compileVarDec(varDecStack) {
     return varDecStack.map(item => {
         return [
             `<varDec>`,
-            ...item.map(({ tag, content }) => "  <" + `${tag}> ${content} </${tag}>`),
+            ...item.map(singleItemXmlTag),
             `</varDec>`
         ]
     })
@@ -123,18 +118,17 @@ function handleParams(list) {
     return [
         `  <symbol> ( </symbol>`,
         `  <parameterList>`,
-        ...list.map(({ tag, content }) => "    <" + `${tag}> ${content} </${tag}>`),
+        ...list.map(singleItemXmlTag),
         `  </parameterList>`,
         `  <symbol> ) </symbol>`
     ]
 }
 
 function handleRoutineBody(list) {
-
     if (list.length === 0) {
         return list
     }
-    const funcBody = list.slice(1, list.length - 1)
+    const funcBody = list.slice(1, list.length - 1) // remove { and }
     const router = {
         varDecStack: [],
         statementsStack: []
@@ -192,6 +186,50 @@ function compileStatements(statments) {
     ]
 }
 
+function groupStatements(statements) {
+    // need handle if and while use a stack to count {} pair
+    if (statements.length === 0) {
+        return []
+    }
+    const ret = []
+    let ifwhileStack = []
+    const curlyStack = []
+    statements.forEach((token, index) => {
+        const { content } = token
+        if (statementsTitles.includes(content) && ifwhileStack.length === 0) {
+            if (statementsNeedNested.includes(content)) {
+                ifwhileStack.push(token)
+                return
+            }
+            if (ifwhileStack.length === 0) {
+                ret.push([token])
+            }
+            return
+        }
+        if (ifwhileStack.length) {
+            ifwhileStack.push(token)
+            if (content === '{') {
+                curlyStack.push(token)
+            }
+            if (content === "}") {
+                curlyStack.pop()
+            }
+            if (curlyStack.length === 0 && ifwhileStack[ifwhileStack.length - 1].content === "}") {
+                // current if else or while is close
+                if (statements[index + 1] && statements[index + 1].content === 'else') {
+                    return;
+                }
+                ret.push(ifwhileStack)
+                ifwhileStack = []
+            }
+            return
+        }
+        const lastIndex = ret.length - 1
+        ret[lastIndex].push(token)
+    })
+    return ret
+}
+
 function compileLet(statements) {
     const [, varName, ...rest] = statements
     let lefthandExpressionStack = []
@@ -244,8 +282,8 @@ function compileWhile(statements) {
     }
 
     const compiledExpression = compileExpression(expression)
+    const compiledWhileSts = compileStatements(whileStatements) // recursive compile statements while statement in while
 
-    const compiledWhileSts = compileStatements(whileStatements)
     return [
         "<whileStatement>",
         singleItemXmlTag(key),
@@ -288,7 +326,7 @@ function compileIf(statements) {
     const curlyStack = []
     let ifStatements = []
     let elseStatements = []
-    let whichPart = 1
+    let whichPart = 1 // 1 is if statement 2 is else stament
     for (let i = 0; i < ifElseMixed.length; i++) {
         const token = ifElseMixed[i]
         const { content } = token
@@ -311,8 +349,8 @@ function compileIf(statements) {
 
     const compiledExpression = compileExpression(expression)
     const compiledIfStatements = compileStatements(ifStatements.slice(1, ifStatements.length - 1));
-
     const compiledElseStatements = compileStatements(elseStatements.slice(2, elseStatements.length - 1));
+
     const tokenLizedIfStatments = [
         singleItemXmlTag(ifKeyp),
         singleItemXmlTag(leftBrace),
@@ -335,55 +373,12 @@ function compileIf(statements) {
     ]
 }
 
-function groupStatements(statements) {
 
-    if (statements.length === 0) {
-        return []
-    }
-    const ret = []
-    let ifwhileStack = []
-    const curlyStack = []
-    statements.forEach((token, index) => {
-        const { content } = token
-        if (statementsTitles.includes(content) && ifwhileStack.length === 0) {
-            if (statementsNeedNested.includes(content)) {
-                ifwhileStack.push(token)
-                return
-            }
-            if (ifwhileStack.length === 0) {
-                ret.push([token])
-            }
-            return
-        }
-        if (ifwhileStack.length) {
-            ifwhileStack.push(token)
-            if (content === '{') {
-                curlyStack.push(token)
-            }
-            if (content === "}") {
-                curlyStack.pop()
-            }
-            if (curlyStack.length === 0 && ifwhileStack[ifwhileStack.length - 1].content === "}") {
-                if (statements[index + 1] && statements[index + 1].content === 'else') {
-                    return;
-                }
-                ret.push(ifwhileStack)
-                ifwhileStack = []
-            }
-            return
-        }
-        const lastIndex = ret.length - 1
-        ret[lastIndex].push(token)
-    })
-    return ret
-}
 function compliledo(statement) {
     // 'do' subroutineCall ';'
-
     const [key, ...rest] = statement
     const last = rest.pop()
     const compiledsubCall = subCallTerm(rest)
-
     return [
         "<doStatement>",
         singleItemXmlTag(key),
@@ -441,12 +436,6 @@ function compileExpression(list) {
     if (!Array.isArray(list) && list) {
         return [`<expression>\n${compileTerm([list])}\n</expression>`]
     }
-    const router = {
-        first: [],
-        op: null,
-        second: []
-    }
-
     if (list.length === 0) {
         return []
     }
@@ -462,7 +451,14 @@ function compileExpression(list) {
         return [singleItemXmlTag(list.pop())]
     }
 
+    const router = {
+        first: [],
+        op: null,
+        second: []
+    }
+
     if (list.length === 2 && ["-", "~"].includes(list[0].content)) {
+        // unary term
         return flatten([
             '<expression>',
             compileTerm(list),
@@ -482,7 +478,7 @@ function compileExpression(list) {
         const { content } = item
         const lastItem = list[index - 1]
         const isExpressBrace = !lastItem || isexpressions.includes(lastItem.content)
-
+        // (expreess) || + (xxx)|| *(1 + (xxx))
         if (content === "(") {
             if (isExpressBrace) {
                 stack.push(item)
@@ -512,12 +508,12 @@ function compileExpression(list) {
                 tempStack.push(item)
                 return
             }
-            const la = stack.pop()
+            const lastLeftCurlyBrace = stack.pop()
             let whickOp = router.op ? 'second' : 'first'
             if (router[whickOp].length === 0) {
-                router[whickOp].push([la, ...tempStack, item])
+                router[whickOp].push([lastLeftCurlyBrace, ...tempStack, item])
             } else {
-                router[whickOp] = [la, ...router[whickOp], ...tempStack, item]
+                router[whickOp] = [lastLeftCurlyBrace, ...router[whickOp], ...tempStack, item]
             }
             tempStack = []
         }
@@ -590,9 +586,7 @@ function compileTerm(term) {
         // varName '[' expression ']' 
         return `<term>\n${singleItemXmlTag(term[0])}\n${singleItemXmlTag(term[1])}\n ${compileExpression(term.slice(2, term.length - 1)).join("\n")}\n${singleItemXmlTag(term[term.length - 1])}\n</term>`
     }
-
     return `<term>\n${subCallTerm(term).join("\n")}\n</term>`
-
 }
 
 function subCallTerm(term) {
@@ -614,18 +608,16 @@ function subCallTerm(term) {
     let startpoint = 0
     const expressionList = term.slice(leftCurly + 1, rightCurly)
     expressionList.forEach(({ content }, index) => {
-        if (content === ",") {
+        if (content === ",") { // seperate params
             toCompliledExpress.push(expressionList.slice(startpoint, index))
             startpoint = index + 1
         }
     });
     toCompliledExpress.push(expressionList.slice(startpoint))
-
     const compiledExpressionList = flatten(toCompliledExpress.map((item, index) => {
         return [...compileExpression(item), ' <symbol> , </symbol>']
     }))
-
-    compiledExpressionList.pop()
+    compiledExpressionList.pop() // map will lead an extra ","
     const leftPart = term.slice(0, leftCurly + 1).map(singleItemXmlTag)
 
     return [
@@ -637,13 +629,6 @@ function subCallTerm(term) {
     ]
 }
 
-
-main('./compiler/tests/ArrayTest/main.jack')
-
-main('./compiler/tests/ExpressionLessSquare/Main.jack')
-main('./compiler/tests/ExpressionLessSquare/Square.jack')
-main('./compiler/tests/ExpressionLessSquare/SquareGame.jack')
-
-main('./compiler/tests/Square/Main.jack')
-main('./compiler/tests/Square/SquareGame.jack')
-main('./compiler/tests/square/Square.jack')
+module.exports = {
+    main
+}
