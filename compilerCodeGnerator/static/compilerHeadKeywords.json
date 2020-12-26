@@ -1,0 +1,39 @@
+{
+    "classVarDecKeyWord": [
+        "static",
+        "field"
+    ],
+    "functionTitles": [
+        "constructor",
+        "function",
+        "method"
+    ],
+    "statementsTitles": [
+        "if",
+        "let",
+        "while",
+        "do",
+        "return",
+        "else"
+    ],
+    "statementsNeedNested": [
+        "if",
+        "while"
+    ],
+    "operators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "&",
+        "<",
+        ">",
+        "=",
+        "~",
+        "|",
+        "&lt;",
+        "&gt;",
+        "&quot;",
+        "&amp;"
+    ]
+}
