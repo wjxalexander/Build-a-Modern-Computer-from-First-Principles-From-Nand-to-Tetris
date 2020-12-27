@@ -16,15 +16,19 @@ function main(filePath) {
 let currentClassSymbolTale;
 let currentFunctionSymbolTable;
 let classType;
+let ifLabel;
+let whileLabel
 function compileClass(codes) {
     const [classKeyword, className, leftBrace, ...rest] = codes
     const { content: clsKey } = classKeyword;
     const { content: lftBrace } = leftBrace
     const { content: rgtBrace } = rest.pop()
+
     if (clsKey !== "class" || lftBrace !== "{" || rgtBrace !== "}") {
         throw new Error("wrong class format")
     }
     currentClassSymbolTale = new Map()
+    currentClassSymbolTale.set('field', [])
     classType = className.content
     const flatRet = flatten(complileClassBody(rest))
     return flatRet
@@ -59,6 +63,9 @@ const segmentsMap = {
     var: 'local'
 }
 function generateSymbolTable(varDecs, table) {
+    if (varDecs.length === 0) {
+        return
+    }
     varDecs.forEach(varDec => {
         varDec.pop()
         const [kind, type, ...vars] = varDec
@@ -75,21 +82,50 @@ function generateSymbolTable(varDecs, table) {
 function compileSubroutine(routines) {
     const tokenizedRouties = routines.map(item => {
         currentFunctionSymbolTable = new Map()
-        currentFunctionSymbolTable.set('total', 0)
+        currentFunctionSymbolTable.set('local', [])
         const [methodName, funcType, routineName, ...rest] = item
+        ifLabel = { name: routineName.content, value: 1 }
+        whileLabel = { name: routineName.content, value: 1 }
         if (methodName.content === "method") {
             currentFunctionSymbolTable.set('argument', [{ name: 'this', type: classType }])
-            currentFunctionSymbolTable.get('total')++
         }
-
+        const compiledPramsAndBody = handleParamAndBody(rest)
+        if (methodName.content === 'constructor') {
+            return compileConstructor(routineName, compiledPramsAndBody)
+        }
+        if (methodName.content === 'method') {
+            return compileMethod(routineName, compiledPramsAndBody)
+        }
         return [
-            `${methodName.content} ${classType}.${routineName.content} ${currentFunctionSymbolTable.get('total')}`,
-            ...handleParamAndBody(rest)
+            `function ${classType}.${routineName.content} ${currentFunctionSymbolTable.get('local').length}`,
+            ...compiledPramsAndBody
         ]
-        // TODO:
     })
     return tokenizedRouties
 }
+
+function compileConstructor(routineName, compiledPramsAndBody) {
+    const thisFieldLength = currentClassSymbolTale.get('field').length
+    return [
+        `function ${classType}.${routineName.content} ${currentFunctionSymbolTable.get('local').length}`,
+        `push constant ${thisFieldLength}`,
+        'call Memory.alloc 1',
+        'pop pointer 0',
+        ...compiledPramsAndBody
+    ]
+}
+
+function compileMethod(routineName, compiledPramsAndBody) {
+    const localLength = currentFunctionSymbolTable.get('local').length
+
+    return [
+        `function ${classType}.${routineName.content} ${localLength}`,
+        'push argument 0',
+        'pop pointer 0',
+        ...compiledPramsAndBody
+    ]
+}
+
 
 function handleParamAndBody(codes) {
     const praramsStack = [[]]
@@ -104,8 +140,10 @@ function handleParamAndBody(codes) {
         }
         index++
     }
+
     const subroutineBodyUnCompiled = codes.slice(index)
     handleArgs(praramsStack)
+
     const subroutineBody = handleRoutineBody(subroutineBodyUnCompiled)
     return subroutineBody
 }
@@ -120,7 +158,6 @@ function sharedFunctionTableHandler(list, kindKey) {
         currentFunctionSymbolTable.has(kindKey)
             ? currentFunctionSymbolTable.get(kindKey).push(translatedItem)
             : currentFunctionSymbolTable.set(kindKey, [translatedItem])
-        currentFunctionSymbolTable.get('total')++
     })
 }
 function handleArgs(list) {
@@ -238,33 +275,50 @@ function compileLet(statements) {
         lefthandExpressionStack.push(i)
     }
     const compiledExpression = compileExpression(rest.slice(index))
+
+    const findSegmentVar = findVars(varName.content)
+    const key = findSegmentVar.key == 'field' ? 'this' : findSegmentVar.key
     if (lefthandExpressionStack.length > 0) {
         return [
             "<letStatement>",
             "<keyword> let </keyword>",
-            "<" + `${varName.tag}> ${varName.content} </${varName.tag}>`,
+            "<" + `${varName.tag} > ${varName.content} </${varName.tag} > `,
             singleItemXmlTag(lefthandExpressionStack[0]),
             ...compileExpression(lefthandExpressionStack.slice(1, lefthandExpressionStack.length - 1)),
             singleItemXmlTag(lefthandExpressionStack[lefthandExpressionStack.length - 1]),
-            `<symbol> = </symbol>`,
+            `< symbol > = </symbol > `,
             ...compileExpression(rest.slice(index)),
             "</letStatement>"
         ]
     }
 
     return [
-        "<letStatement>",
-        "<keyword> let </keyword>",
-        "<" + `${varName.tag}> ${varName.content} </${varName.tag}>`,
-        '<symbol> = </symbol>',
         ...compiledExpression,
-        "</letStatement>"
+        `pop ${key} ${findSegmentVar.index}`
     ]
 
 }
-function findVarInSymbolTables(varName) {
 
+function findVars(content) {
+    const resultInFunctionTable = findVarIntable(content, currentFunctionSymbolTable)
+    const resultInClassTable = findVarIntable(content, currentClassSymbolTale)
+    return resultInFunctionTable || resultInClassTable
 }
+
+function findVarIntable(varName, table) {
+    let ret;
+    for (const [key, values] of table.entries()) {
+        const index = values.findIndex(({ name }) => name === varName)
+        const realKey = key === 'field' ? 'this' : key
+        if (index >= 0) {
+            ret = { key: realKey, index, term: values[index] }
+            break
+        }
+
+    }
+    return ret
+}
+
 function compileWhile(statements) {
     // 'while' '(' expression ')' '{' statements '}'
     const [key, leftBrace, ...rest] = statements
@@ -279,20 +333,21 @@ function compileWhile(statements) {
             break;
         }
     }
+    const labelone = `WHILE_${whileLabel.name}_CON_${whileLabel.value}`
+    const labeltwo = `WHILE_${whileLabel.name}_END_${whileLabel.value}`
+    whileLabel.value++
 
     const compiledExpression = compileExpression(expression)
     const compiledWhileSts = compileStatements(whileStatements) // recursive compile statements while statement in while
 
     return [
-        "<whileStatement>",
-        singleItemXmlTag(key),
-        singleItemXmlTag(leftBrace),
+        `label ${labelone}`,
         ...compiledExpression,
-        '<symbol> ) </symbol>',
-        '<symbol> { </symbol>',
+        'not',
+        `if-goto ${labeltwo}`,
         ...compiledWhileSts,
-        '<symbol> } </symbol>',
-        "</whileStatement>"
+        `goto ${labelone}`,
+        `label ${labeltwo}`
     ]
 }
 function compileReturn(statements) {
@@ -347,27 +402,25 @@ function compileIf(statements) {
     const compiledExpression = compileExpression(expression)
     const compiledIfStatements = compileStatements(ifStatements.slice(1, ifStatements.length - 1));
     const compiledElseStatements = compileStatements(elseStatements.slice(2, elseStatements.length - 1));
-
-    const tokenLizedIfStatments = [
-        singleItemXmlTag(ifKeyp),
-        singleItemXmlTag(leftBrace),
+    const labelone = `IF_${ifLabel.name}_IF_${ifLabel.value} `
+    const labeltwo = `IF_${ifLabel.name}_ELSE_${ifLabel.value} `
+    ifLabel.value++
+    return compiledElseStatements.length > 0 ? [
         ...compiledExpression,
-        '<symbol> ) </symbol>',
-        '<symbol> { </symbol>',
+        'not',
+        `if-goto ${labelone} `,
         ...compiledIfStatements,
-        '<symbol> } </symbol>',
-    ]
-    const tokenLizedElseStatments = compiledElseStatements.length === 0 ? [] : [
-        '<keyword> else </keyword>',
-        '<symbol> { </symbol>',
+        `goto ${labeltwo} `,
+        `label ${labelone} `,
         ...compiledElseStatements,
-        '<symbol> } </symbol>'
-    ]
-    return [
-        '<ifStatement>',
-        ...tokenLizedIfStatments.concat(tokenLizedElseStatments),
-        '</ifStatement>'
-    ]
+        `label ${labeltwo} `
+    ] : [
+            ...compiledExpression,
+            'not',
+            `if-goto ${labelone} `,
+            ...compiledIfStatements,
+            `label ${labelone} `,
+        ]
 }
 
 
@@ -384,50 +437,11 @@ function compliledo(statement) {
 
 function singleItemXmlTag(item) {
     const { tag, content } = item
-    return `<${tag}> ${content} </${tag}>`
+    return `< ${tag}> ${content} </${tag}> `
 }
-
-function subCallTerm(term) {
-    let leftIndex = 0;
-    let rightIndex = 0;
-    for (let i = 0; i < term.length; i++) {
-        if (term[i].content === "(") {
-            leftIndex = i;
-        }
-        if (term[i].content === ")") {
-            rightIndex = i;
-            break;
-        }
-    }
-    const toCompliledExpress = []
-    let startpoint = 0
-    const expressionList = term.slice(leftIndex + 1, rightIndex)
-    expressionList.forEach(({ content }, index) => {
-        if (content === ",") {
-            toCompliledExpress.push(expressionList.slice(startpoint, index))
-            startpoint = index + 1
-        }
-    });
-    toCompliledExpress.push(expressionList.slice(startpoint))
-
-    const compiledExpressionList = flatten(toCompliledExpress.map((item, index) => {
-        return [...compileExpression(item), ' <symbol> , </symbol>']
-    }))
-
-    compiledExpressionList.pop()
-    const leftPart = term.slice(0, leftIndex + 1).map(singleItemXmlTag)
-    const rightPart = term.slice(rightIndex).map(singleItemXmlTag)
-
-    return [...leftPart, "<expressionList>", ...compiledExpressionList, "</expressionList>", ...flatten(rightPart)]
-}
-
-
 
 
 function compileExpression(list) {
-    if (!Array.isArray(list) && list) {
-        return [`<expression>\n${compileTerm([list])}\n</expression>`]
-    }
     if (list.length === 0) {
         return []
     }
@@ -450,11 +464,7 @@ function compileExpression(list) {
 
     if (list.length === 2 && ["-", "~"].includes(list[0].content)) {
         // unary term
-        return flatten([
-            '<expression>',
-            compileTerm(list),
-            '</expression>'
-        ])
+        return compileTerm(list)
     }
 
     if (list[list.length - 1].content === ";") {
@@ -532,7 +542,7 @@ function compileExpression(list) {
     }
     return flatten([
         rightTerm,
-        opertionHandler(op)
+        opertionHandler(op.content)
     ])
 }
 function compileTerm(term) {
@@ -552,27 +562,51 @@ function compileTerm(term) {
         // integerConstant | stringConstant | keywordConstant | varName 
         const { content, tag } = term[0];
         if ('integerConstant' === tag) {
-            return `push constant ${content}`
+            return `push constant ${content} `
         }
-        return `todo: ${content}, ${tag}`
+        if ('identifier' === tag) {
+            const findSegmentVar = findVars(term[0].content)
+            const key = findSegmentVar.key === 'field' ? 'this' : findSegmentVar.key
+            return `push ${key} ${findSegmentVar.index} `
+        }
+        if ('keyword' === tag) {
+            if (content === 'true') {
+                return ['push constant 1', 'neg']
+            }
+            if (content === 'false') {
+                return 'push constant 0'
+            }
+            if (content === 'this') {
+                return 'push pointer 0'
+            }
+        }
+        return `${content}`
     }
     if (term.length === 2) {
         const [unaryOp, toDoterm] = term
         //unaryOp term
-        return `<term>\n${singleItemXmlTag(unaryOp)}\n ${compileTerm([toDoterm])}\n</term>`
+        const unaryOpMap = {
+            "-": 'neg',
+            "~": 'not'
+        }
+        const compiledTodo = compileTerm([toDoterm])
+        return [
+            compiledTodo,
+            unaryOpMap[unaryOp.content]
+        ]
     }
     if (term[1].content === "[" && term[term.length - 1].content === "]") {
         // varName '[' expression ']' 
-        return `<term>\n${singleItemXmlTag(term[0])}\n${singleItemXmlTag(term[1])}\n ${compileExpression(term.slice(2, term.length - 1)).join("\n")}\n${singleItemXmlTag(term[term.length - 1])}\n</term>`
+        return `< term >\n${singleItemXmlTag(term[0])} \n${singleItemXmlTag(term[1])} \n ${compileExpression(term.slice(2, term.length - 1)).join("\n")} \n${singleItemXmlTag(term[term.length - 1])} \n</term > `
     }
-    return `<term>\n${subCallTerm(term).join("\n")}\n</term>`
+    return subCallTerm(term)
 }
 
 function subCallTerm(term) {
     let leftCurly = null;
     let rightCurly = null;
     let i = 0;
-    let j = term.length - 1
+    let j = term.length - 1;
     while (leftCurly === null || rightCurly === null && j > -1 && i < term.length) {
         if (term[i].content === "(" && leftCurly === null) {
             leftCurly = i
@@ -586,12 +620,14 @@ function subCallTerm(term) {
     const toCompliledExpress = []
     let startpoint = 0
     const expressionList = term.slice(leftCurly + 1, rightCurly)
+
     expressionList.forEach(({ content }, index) => {
         if (content === ",") { // seperate params
             toCompliledExpress.push(expressionList.slice(startpoint, index))
             startpoint = index + 1
         }
     });
+
     toCompliledExpress.push(expressionList.slice(startpoint))
 
     const compiledExpressionList = toCompliledExpress.map((item, index) => {
@@ -599,19 +635,51 @@ function subCallTerm(term) {
         return compileExpression(item)
     })
     // compiledExpressionList.pop() // map will lead an extra ","
-    const leftPart = term.slice(0, leftCurly).reduce((pre, cur) => {
+    const calleeHandler = term.slice(0, leftCurly).reduce((pre, cur) => {
         return pre + cur.content
-    }, 'call ')
-    const localArgLength = compiledExpressionList.length
-    return [
-        ...flatten(compiledExpressionList),
-        `${leftPart} ${localArgLength}`
-    ]
+    }, "");
+    const arguLength = toCompliledExpress.filter(item => item.length > 0).length
+    const compiledExp = methodOrFuncCompiler(calleeHandler, flatten(compiledExpressionList), arguLength)
+    return compiledExp
 }
+
+function methodOrFuncCompiler(term, compiledExpressionList, arguLength) {
+    const objCallRegex = /^[a-z]+\..*/i // xxxx.xxx
+    let varsNumber = arguLength
+    let isMethod = false
+    let findInstanceInClsTable = null
+    const [objName, objMethod] = term.split('.')
+    if (objCallRegex.test(term)) {
+        findInstanceInClsTable = findVars(objName)
+        if (findInstanceInClsTable) {
+            isMethod = true
+        }
+    } else {
+        isMethod = true
+    }
+    if (isMethod) {
+        varsNumber++
+        if (!findInstanceInClsTable) {
+            // directly invoke method in same class
+            findInstanceInClsTable = { key: "pointer", index: 0, term: { type: classType } }
+        }
+    }
+
+    return isMethod ? [
+        `push ${findInstanceInClsTable.key} ${findInstanceInClsTable.index}`,
+        ...compiledExpressionList,
+        `call ${findInstanceInClsTable.term.type}.${objMethod || objName} ${varsNumber}`
+    ] : [...compiledExpressionList, `call ${term} ${varsNumber} `]
+}
+
 // main('./compilerCodeGnerator/tests/Seven/Main.jack')
 // main('./compilerCodeGnerator/tests/Square/Square.jack')
 // main('./compilerCodeGnerator/tests/Square/Main.jack')
-main('./compilerCodeGnerator/tests/ConvertToBin/Main.jack')
+// main('./compilerCodeGnerator/tests/ConvertToBin/Main.jack')
+main('./compilerCodeGnerator/tests/Square/Main.jack')
+main('./compilerCodeGnerator/tests/Square/Square.jack')
+main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
+
 module.exports = {
     main
 }

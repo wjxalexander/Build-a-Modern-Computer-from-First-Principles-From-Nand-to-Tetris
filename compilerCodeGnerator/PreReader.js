@@ -9,12 +9,22 @@ function readFile(dirpath) {
         console.warn(error)
     }
 }
+let groupedComment = false
 function ignoreWhiteSpace(item) {
     const doubleSlashPosition = item.indexOf("//")
     const slashStarPosition = item.indexOf("/*")
     const singleStarPosition = item.indexOf(" * ")
-
+    const slashEndPosition = item.indexOf("*/")
+    if (slashStarPosition >= 0) {
+        groupedComment = true
+    }
+    if (slashEndPosition >= 0) {
+        groupedComment = false
+    }
     if (doubleSlashPosition === 0 || slashStarPosition === 0 || singleStarPosition === 0 || item.includes("*/")) {
+        return ""
+    }
+    if (singleStarPosition >= 0 && groupedComment) {
         return ""
     }
     if (doubleSlashPosition > 0) {

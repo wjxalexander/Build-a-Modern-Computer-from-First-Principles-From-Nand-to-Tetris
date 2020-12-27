@@ -1,10 +1,16 @@
 const opertationMap = {
     '+': 'add',
-    '-': '-',
-    '*': 'call Math.multiply 2'
+    '-': 'sub',
+    '*': 'call Math.multiply 2',
+    '~': 'not',
+    '=': 'eq',
+    '&amp;': 'and',
+    '&gt;': 'gt',
+    '&lt;': 'lt'
+
 }
 function opertionHandler(op) {
-    return opertationMap[op] || 'todo' + op
+    return opertationMap[op] || 'todo' + op + 'in inophand'
 }
 
 function flatten(arr) {
