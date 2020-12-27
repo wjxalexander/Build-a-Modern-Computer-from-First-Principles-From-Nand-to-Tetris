@@ -652,16 +652,16 @@ function methodOrFuncCompiler(term, compiledExpressionList, arguLength) {
     ] : [...compiledExpressionList, `call ${term} ${varsNumber}`]
 }
 
-// main('./compilerCodeGnerator/tests/Seven/Main.jack')
-// main('./compilerCodeGnerator/tests/ConvertToBin/Main.jack')
-// main('./compilerCodeGnerator/tests/Square/Main.jack')
-// main('./compilerCodeGnerator/tests/Square/Square.jack')
-// main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
-// main('./compilerCodeGnerator/tests/Average/Main.jack')
-// main('./compilerCodeGnerator/tests/Pong/Main.jack')
-// main('./compilerCodeGnerator/tests/Pong/Ball.jack')
-// main('./compilerCodeGnerator/tests/Pong/Bat.jack')
-// main('./compilerCodeGnerator/tests/Pong/PongGame.jack')
+main('./compilerCodeGnerator/tests/Seven/Main.jack')
+main('./compilerCodeGnerator/tests/ConvertToBin/Main.jack')
+main('./compilerCodeGnerator/tests/Square/Main.jack')
+main('./compilerCodeGnerator/tests/Square/Square.jack')
+main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
+main('./compilerCodeGnerator/tests/Average/Main.jack')
+main('./compilerCodeGnerator/tests/Pong/Main.jack')
+main('./compilerCodeGnerator/tests/Pong/Ball.jack')
+main('./compilerCodeGnerator/tests/Pong/Bat.jack')
+main('./compilerCodeGnerator/tests/Pong/PongGame.jack')
 main('./compilerCodeGnerator/tests/ComplexArrays/Main.jack')
 module.exports = {
     main

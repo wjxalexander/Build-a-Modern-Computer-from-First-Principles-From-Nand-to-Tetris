@@ -17,10 +17,10 @@ function Main.convert 3
 push constant 1
 neg
 pop local 2
-label WHILE_LABEL_convert_CON_1
+label WHILE_convert_CON_1
 push local 2
 not
-if-goto WHILE_LABEL_convert_END_1
+if-goto WHILE_convert_END_1
 push local 1
 push constant 1
 add
@@ -33,7 +33,7 @@ push constant 16
 gt
 not
 not
-if-goto IF_LABEL_convert_IF_2
+if-goto IF_convert_IF_2  
 push argument 0
 push local 0
 and
@@ -41,29 +41,29 @@ push constant 0
 eq
 not
 not
-if-goto IF_LABEL_convert_IF_1
+if-goto IF_convert_IF_1  
 push constant 8000
 push local 1
 add
 push constant 1
 call Memory.poke 2
 pop temp 0
-goto IF_LABEL_convert_ELSE_1
-label IF_LABEL_convert_IF_1
+goto IF_convert_ELSE_1  
+label IF_convert_IF_1  
 push constant 8000
 push local 1
 add
 push constant 0
 call Memory.poke 2
 pop temp 0
-label IF_LABEL_convert_ELSE_1
-goto IF_LABEL_convert_ELSE_2
-label IF_LABEL_convert_IF_2
+label IF_convert_ELSE_1  
+goto IF_convert_ELSE_2  
+label IF_convert_IF_2  
 push constant 0
 pop local 2
-label IF_LABEL_convert_ELSE_2
-goto WHILE_LABEL_convert_CON_1
-label WHILE_LABEL_convert_END_1
+label IF_convert_ELSE_2  
+goto WHILE_convert_CON_1
+label WHILE_convert_END_1
 push constant 0
 return
 function Main.nextMask 0
@@ -71,23 +71,23 @@ push argument 0
 push constant 0
 eq
 not
-if-goto IF_LABEL_nextMask_IF_1
+if-goto IF_nextMask_IF_1  
 push constant 1
 return
-goto IF_LABEL_nextMask_ELSE_1
-label IF_LABEL_nextMask_IF_1
+goto IF_nextMask_ELSE_1  
+label IF_nextMask_IF_1  
 push argument 0
 push constant 2
 call Math.multiply 2
 return
-label IF_LABEL_nextMask_ELSE_1
+label IF_nextMask_ELSE_1  
 function Main.fillMemory 0
-label WHILE_LABEL_fillMemory_CON_1
+label WHILE_fillMemory_CON_1
 push argument 1
 push constant 0
 gt
 not
-if-goto WHILE_LABEL_fillMemory_END_1
+if-goto WHILE_fillMemory_END_1
 push argument 0
 push argument 2
 call Memory.poke 2
@@ -100,7 +100,7 @@ push argument 0
 push constant 1
 add
 pop argument 0
-goto WHILE_LABEL_fillMemory_CON_1
-label WHILE_LABEL_fillMemory_END_1
+goto WHILE_fillMemory_CON_1
+label WHILE_fillMemory_END_1
 push constant 0
 return
