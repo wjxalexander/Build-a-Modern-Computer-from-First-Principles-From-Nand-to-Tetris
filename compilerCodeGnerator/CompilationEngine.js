@@ -1,11 +1,11 @@
 const { tokenizer } = require("./Tokenizer")
 const compilerDirectMap = require("./static/compilerHeadKeywords.json")
 const { writeFile } = require("./CodeWriter")
-const { opertionHandler, flatten } = require("./helpers")
+const { opertionHandler, flatten, stringCompiler } = require("./helpers")
 const { classVarDecKeyWord, functionTitles, statementsTitles, operators, statementsNeedNested } = compilerDirectMap;
 function main(filePath) {
     const tokenizedCode = tokenizer(filePath)
-    const { xml, json } = tokenizedCode
+    const { json } = tokenizedCode
     const compiledFile = compileClass(json)
     const fileArr = filePath.split('/')
     const fileName = fileArr[fileArr.length - 1].split('.')[0]
@@ -279,17 +279,20 @@ function compileLet(statements) {
     const findSegmentVar = findVars(varName.content)
     const key = findSegmentVar.key == 'field' ? 'this' : findSegmentVar.key
     if (lefthandExpressionStack.length > 0) {
-        return [
-            "<letStatement>",
-            "<keyword> let </keyword>",
-            "<" + `${varName.tag} > ${varName.content} </${varName.tag} > `,
-            singleItemXmlTag(lefthandExpressionStack[0]),
-            ...compileExpression(lefthandExpressionStack.slice(1, lefthandExpressionStack.length - 1)),
-            singleItemXmlTag(lefthandExpressionStack[lefthandExpressionStack.length - 1]),
-            `< symbol > = </symbol > `,
-            ...compileExpression(rest.slice(index)),
-            "</letStatement>"
-        ]
+        if (lefthandExpressionStack[0].content === '[' && lefthandExpressionStack[lefthandExpressionStack.length - 1].content === ']') {
+            const compiledInside = compileExpression(lefthandExpressionStack.slice(1, lefthandExpressionStack.length - 1))
+            return [
+                `push ${key} ${findSegmentVar.index}`,
+                ...compiledInside,
+                'add',
+                ...compiledExpression,
+                'pop temp 0', // temp 0 = the value of expression2
+                'pop pointer 1',
+                'push temp 0',
+                'pop that 0',
+            ]
+        }
+        return 'todo'
     }
 
     return [
@@ -352,12 +355,8 @@ function compileWhile(statements) {
 }
 function compileReturn(statements) {
     // 'return' expression? ';'
-    const [key, ...expression] = statements
-
-    return [
-        ...compileExpression(expression),
-        'return'
-    ]
+    const [, ...expression] = statements
+    return [...compileExpression(expression), 'return']
 }
 
 function compileIf(statements) {
@@ -405,22 +404,14 @@ function compileIf(statements) {
     const labelone = `IF_${ifLabel.name}_IF_${ifLabel.value} `
     const labeltwo = `IF_${ifLabel.name}_ELSE_${ifLabel.value} `
     ifLabel.value++
+    const ifPart = [...compiledExpression, 'not', `if-goto ${labelone} `, ...compiledIfStatements,]
     return compiledElseStatements.length > 0 ? [
-        ...compiledExpression,
-        'not',
-        `if-goto ${labelone} `,
-        ...compiledIfStatements,
+        ...ifPart,
         `goto ${labeltwo} `,
         `label ${labelone} `,
         ...compiledElseStatements,
         `label ${labeltwo} `
-    ] : [
-            ...compiledExpression,
-            'not',
-            `if-goto ${labelone} `,
-            ...compiledIfStatements,
-            `label ${labelone} `,
-        ]
+    ] : [...ifPart, `label ${labelone} `,]
 }
 
 
@@ -429,10 +420,7 @@ function compliledo(statement) {
     const [, ...rest] = statement
     rest.pop()
     const compiledsubCall = subCallTerm(rest)
-    return [
-        ...compiledsubCall,
-        'pop temp 0'
-    ]
+    return [...compiledsubCall, 'pop temp 0']
 }
 
 function singleItemXmlTag(item) {
@@ -569,6 +557,10 @@ function compileTerm(term) {
             const key = findSegmentVar.key === 'field' ? 'this' : findSegmentVar.key
             return `push ${key} ${findSegmentVar.index} `
         }
+        if ('stringConstant' === tag) {
+
+            return stringCompiler(content)
+        }
         if ('keyword' === tag) {
             if (content === 'true') {
                 return ['push constant 1', 'neg']
@@ -597,7 +589,17 @@ function compileTerm(term) {
     }
     if (term[1].content === "[" && term[term.length - 1].content === "]") {
         // varName '[' expression ']' 
-        return `< term >\n${singleItemXmlTag(term[0])} \n${singleItemXmlTag(term[1])} \n ${compileExpression(term.slice(2, term.length - 1)).join("\n")} \n${singleItemXmlTag(term[term.length - 1])} \n</term > `
+        const findSegmentVar = findVars(term[0].content)
+        const key = findSegmentVar.key == 'field' ? 'this' : findSegmentVar.key
+        const compiledInside = compileExpression(term.slice(2, term.length - 1))
+
+        return [
+            `push ${key} ${findSegmentVar.index}`,
+            ...compiledInside,
+            'add',
+            'pop pointer 0',
+            'push that 0'
+        ]
     }
     return subCallTerm(term)
 }
@@ -676,9 +678,10 @@ function methodOrFuncCompiler(term, compiledExpressionList, arguLength) {
 // main('./compilerCodeGnerator/tests/Square/Square.jack')
 // main('./compilerCodeGnerator/tests/Square/Main.jack')
 // main('./compilerCodeGnerator/tests/ConvertToBin/Main.jack')
-main('./compilerCodeGnerator/tests/Square/Main.jack')
-main('./compilerCodeGnerator/tests/Square/Square.jack')
-main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
+// main('./compilerCodeGnerator/tests/Square/Main.jack')
+// main('./compilerCodeGnerator/tests/Square/Square.jack')
+// main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
+main('./compilerCodeGnerator/tests/Average/Main.jack')
 
 module.exports = {
     main
