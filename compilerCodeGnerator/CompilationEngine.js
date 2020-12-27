@@ -81,6 +81,7 @@ function generateSymbolTable(varDecs, table) {
 
 function compileSubroutine(routines) {
     const tokenizedRouties = routines.map(item => {
+
         currentFunctionSymbolTable = new Map()
         currentFunctionSymbolTable.set('local', [])
         const [methodName, funcType, routineName, ...rest] = item
@@ -90,6 +91,7 @@ function compileSubroutine(routines) {
             currentFunctionSymbolTable.set('argument', [{ name: 'this', type: classType }])
         }
         const compiledPramsAndBody = handleParamAndBody(rest)
+
         if (methodName.content === 'constructor') {
             return compileConstructor(routineName, compiledPramsAndBody)
         }
@@ -681,7 +683,12 @@ function methodOrFuncCompiler(term, compiledExpressionList, arguLength) {
 // main('./compilerCodeGnerator/tests/Square/Main.jack')
 // main('./compilerCodeGnerator/tests/Square/Square.jack')
 // main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
-main('./compilerCodeGnerator/tests/Average/Main.jack')
+// main('./compilerCodeGnerator/tests/Average/Main.jack')
+
+// main('./compilerCodeGnerator/tests/Pong/Main.jack')
+main('./compilerCodeGnerator/tests/Pong/Ball.jack')
+// main('./compilerCodeGnerator/tests/Pong/Bat.jack')
+// main('./compilerCodeGnerator/tests/Pong/PongGame.jack')
 
 module.exports = {
     main

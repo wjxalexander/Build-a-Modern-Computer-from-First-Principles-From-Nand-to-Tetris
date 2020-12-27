@@ -5,6 +5,7 @@ const opertationMap = {
     '/': 'call Math.divide 2',
     '~': 'not',
     '=': 'eq',
+    '|': 'or',
     '&amp;': 'and',
     '&gt;': 'gt',
     '&lt;': 'lt'
