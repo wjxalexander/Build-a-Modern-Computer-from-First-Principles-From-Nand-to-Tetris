@@ -7,10 +7,7 @@ function main(filePath) {
     const tokenizedCode = tokenizer(filePath)
     const { json } = tokenizedCode
     const compiledFile = compileClass(json)
-    const fileArr = filePath.split('/')
-    const fileName = fileArr[fileArr.length - 1].split('.')[0]
-    fileArr.pop()
-    writeFile(compiledFile, fileArr.join("/"), `${fileName}`, "vm")
+    return compiledFile
 }
 
 let currentClassSymbolTale;
