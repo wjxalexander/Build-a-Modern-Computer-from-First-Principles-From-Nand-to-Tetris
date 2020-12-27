@@ -277,7 +277,7 @@ function compileLet(statements) {
         }
         lefthandExpressionStack.push(i)
     }
-    const pointer = compileExpression(rest.slice(index))
+    const compiledExpression = compileExpression(rest.slice(index))
     const findSegmentVar = findVars(varName.content)
     const key = findSegmentVar.key == 'field' ? 'this' : findSegmentVar.key
     if (lefthandExpressionStack.length > 0) {
