@@ -575,7 +575,7 @@ function compileTerm(term) {
             `push ${key} ${findSegmentVar.index}`,
             ...compiledInside,
             'add',
-            'pop pointer 0',
+            'pop pointer 1',
             'push that 0'
         ]
     }
