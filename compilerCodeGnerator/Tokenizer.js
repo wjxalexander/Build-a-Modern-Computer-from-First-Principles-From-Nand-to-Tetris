@@ -8,7 +8,7 @@ function tokenizer(filepath) {
     const grouptedTokens = preloadCodes.map(codeHandler).reduce((acc, cur) => acc.concat(cur))
     const tokensWithTag = grouptedTokens.map(getTokenType)
     const xmlPart = tokensWithTag.map(item => item.xml)
-  
+
     const jsonPart = tokensWithTag.map(item => item.json)
     const tokensWithLabel = ["<tokens>", ...xmlPart, "</tokens>"]
     return { xml: tokensWithLabel, json: jsonPart }
@@ -67,7 +67,7 @@ function getTokenType(token) {
     if (symbol.includes(token)) {
         return keywordAndSymbolTokenGenerate(token, "symbol");
     }
-    if (/\d+/.test(token)) {
+    if (/^\d+$/.test(token)) {
         return integerTokenGenerater(token)
     }
     if (/^\".*\"$/.test(token)) {

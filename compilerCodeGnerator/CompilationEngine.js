@@ -217,6 +217,7 @@ function compileStatements(statments) {
         return []
     }
     const groupedStatments = groupStatements(statments)
+
     return groupedStatments.map(stamentsOnebyOne)
 }
 
@@ -276,8 +277,7 @@ function compileLet(statements) {
         }
         lefthandExpressionStack.push(i)
     }
-    const compiledExpression = compileExpression(rest.slice(index))
-
+    const pointer = compileExpression(rest.slice(index))
     const findSegmentVar = findVars(varName.content)
     const key = findSegmentVar.key == 'field' ? 'this' : findSegmentVar.key
     if (lefthandExpressionStack.length > 0) {
@@ -425,12 +425,6 @@ function compliledo(statement) {
     return [...compiledsubCall, 'pop temp 0']
 }
 
-function singleItemXmlTag(item) {
-    const { tag, content } = item
-    return `< ${tag}> ${content} </${tag}> `
-}
-
-
 function compileExpression(list) {
     if (list.length === 0) {
         return []
@@ -460,59 +454,42 @@ function compileExpression(list) {
     if (list[list.length - 1].content === ";") {
         list.pop()
     }
-
-    const stack = []
-    let tempStack = []
-    const isexpressions = [...operators, "("]
-    list.forEach((item, index) => {
-        const { content } = item
-        const lastItem = list[index - 1]
-        const isExpressBrace = !lastItem || isexpressions.includes(lastItem.content)
-        // (expreess) || + (xxx)|| *(1 + (xxx))
-        if (content === "(") {
-            if (isExpressBrace) {
-                stack.push(item)
-            } else {
-                tempStack.push(item)
-            }
-            return
-        }
-
-        if (!["(", ")"].includes(content)) {
-            if (operators.includes(content) && stack.length > 0) {
-                tempStack.push(item)
-            }
-            if (!operators.includes(content)) {
-                tempStack.push(item)
-            }
-        }
-        if (operators.includes(content) && stack.length === 0) {
-            if (router.first.length === 0) {
-                router.first = [...tempStack]
-                tempStack = []
-            }
-            router.op = item
-        }
-        if (content === ")") {
-            if (stack.length === 0) {
-                tempStack.push(item)
-                return
-            }
-            const lastLeftCurlyBrace = stack.pop()
-            let whickOp = router.op ? 'second' : 'first'
-            if (router[whickOp].length === 0) {
-                router[whickOp].push([lastLeftCurlyBrace, ...tempStack, item])
-            } else {
-                router[whickOp] = [lastLeftCurlyBrace, ...router[whickOp], ...tempStack, item]
-            }
-            tempStack = []
-        }
-    })
-    if (router.op && router.second.length === 0) {
-        router.second = router.second.concat(...tempStack)
+    if (list.length === 1) {
+        return compileTerm(list)
     }
-    if (!router.op && router.first.length === 0) {
-        router.first = router.first.concat(...tempStack)
+    let stackcount = 0
+    const isexpressions = [...operators, "("]
+    for (let i = 0; i < list.length; i++) {
+        const item = list[i]
+        const { content } = item
+        if (content === "(") {
+            stackcount++
+            continue
+        }
+        if (content === ')') {
+            stackcount--
+            continue
+        }
+        if (isexpressions.includes(content)) {
+            if (stackcount > 0) {
+                continue
+            }
+            if (stackcount === 0) {
+                router.op = item
+                router.first = list.slice(0, i)
+                router.second = list.slice(i + 1)
+                break;
+            }
+        }
+    }
+
+    if (router.first.length === 0) {
+        if (!operators.includes(list[0].content)) {
+            router.first = list.slice(0)
+        } else {
+            router.op = list[0]
+            router.second = list.slice(1)
+        }
     }
     const { first, op, second } = router
     const flatFirst = flatten(first)
@@ -552,26 +529,25 @@ function compileTerm(term) {
         // integerConstant | stringConstant | keywordConstant | varName 
         const { content, tag } = term[0];
         if ('integerConstant' === tag) {
-            return `push constant ${content} `
+            return [`push constant ${content}`]
         }
         if ('identifier' === tag) {
             const findSegmentVar = findVars(term[0].content)
             const key = findSegmentVar.key === 'field' ? 'this' : findSegmentVar.key
-            return `push ${key} ${findSegmentVar.index} `
+            return [`push ${key} ${findSegmentVar.index}`]
         }
         if ('stringConstant' === tag) {
-
             return stringCompiler(content)
         }
         if ('keyword' === tag) {
             if (content === 'true') {
                 return ['push constant 1', 'neg']
             }
-            if (content === 'false') {
-                return 'push constant 0'
+            if (['false', 'null'].includes(content)) {
+                return ['push constant 0']
             }
             if (content === 'this') {
-                return 'push pointer 0'
+                return ['push pointer 0']
             }
         }
         return `${content}`
@@ -673,23 +649,20 @@ function methodOrFuncCompiler(term, compiledExpressionList, arguLength) {
         `push ${findInstanceInClsTable.key} ${findInstanceInClsTable.index}`,
         ...compiledExpressionList,
         `call ${findInstanceInClsTable.term.type}.${objMethod || objName} ${varsNumber}`
-    ] : [...compiledExpressionList, `call ${term} ${varsNumber} `]
+    ] : [...compiledExpressionList, `call ${term} ${varsNumber}`]
 }
 
 // main('./compilerCodeGnerator/tests/Seven/Main.jack')
-// main('./compilerCodeGnerator/tests/Square/Square.jack')
-// main('./compilerCodeGnerator/tests/Square/Main.jack')
 // main('./compilerCodeGnerator/tests/ConvertToBin/Main.jack')
 // main('./compilerCodeGnerator/tests/Square/Main.jack')
 // main('./compilerCodeGnerator/tests/Square/Square.jack')
 // main('./compilerCodeGnerator/tests/Square/SquareGame.jack')
 // main('./compilerCodeGnerator/tests/Average/Main.jack')
-
 // main('./compilerCodeGnerator/tests/Pong/Main.jack')
-main('./compilerCodeGnerator/tests/Pong/Ball.jack')
+// main('./compilerCodeGnerator/tests/Pong/Ball.jack')
 // main('./compilerCodeGnerator/tests/Pong/Bat.jack')
 // main('./compilerCodeGnerator/tests/Pong/PongGame.jack')
-
+main('./compilerCodeGnerator/tests/ComplexArrays/Main.jack')
 module.exports = {
     main
 }
